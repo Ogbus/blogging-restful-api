@@ -47,7 +47,7 @@ app.get('/:id', (req, res) => {
     }
 });
 
-// Creating a database on the database 
+// Creating a post on the database 
 app.post('/', (req, res) => {
     const { error } = validateBlog(req.body);
     if(error) {
@@ -64,6 +64,27 @@ app.post('/', (req, res) => {
     }
 
     blogs.push(blog);
+    res.send(blog);
+});
+
+// Updating a post on the database
+app.put('/:id', (req, res) => {
+    // Checking if the post exists
+    const blog = blogs.find(innerBlog => innerBlog.id === parseInt(req.params.id));
+    if(!blog) {
+        return res.status(404).send('The post you are looking for cannot be found');
+    }
+
+    // Validate the blog
+    const { error } = validateBlog(req.body);
+    if(error) {
+        res.status(400).send(error.details[0].message);
+    }
+
+    // Udate the blog
+    blog.title = req.body.title;
+    blog.content = req.body.content;
+    blog.author = req.body.author;
     res.send(blog);
 })
 
