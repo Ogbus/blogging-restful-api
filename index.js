@@ -2,25 +2,28 @@ const express = require('express');
 const app = express();
 const Joi = require('joi');
 
+const currentDate = new Date();
+const timestamp = currentDate;
+
 
 const blogs = [
     {
         id: 1,
-        timestamp: '10-01-2024, 16:24:30',
+        timestamp: timestamp,
         title: 'The Rising Star',
         content: 'A rising star is in the making. Wait for it.',
         author: 'Iroms',
     },
     {
         id: 2,
-        timestamp: '09-30-2023, 11:24:30',
+        timestamp: timestamp,
         title: 'The New Beginning',
         content: 'This beginning is like no other and a kind of its own.',
         author: 'Felix',
     },
     {
         id: 3,
-        timestamp: '02-06-2023, 05:29:30',
+        timestamp: timestamp,
         title: 'The Standing Order',
         content: 'There is a need for a good standing order to be in place.',
         author: 'Felix',
@@ -45,6 +48,24 @@ app.get('/:id', (req, res) => {
 });
 
 // Creating a database on the database 
+app.post('/', (req, res) => {
+    const { error } = validateBlog(req.body);
+    if(error) {
+        res.status(400).send(error.details[0].message)
+    }
+
+    const blog = {
+        id: blogs.length + 1,
+        timestamp: timestamp, //this is to be generated in a real database
+        title: req.body.title,
+        content: req.body.content,
+        author: req.body.author
+
+    }
+
+    blogs.push(blog);
+    res.send(blog);
+})
 
 
 // Validating the database
