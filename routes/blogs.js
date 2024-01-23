@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Blog, validate } = require('../models/blog')
-const asyncMiddleware = require('../middleware/async')
+const auth = require('../middleware/auth')
 
 // const blogs = [
 //     {
@@ -28,13 +28,13 @@ const asyncMiddleware = require('../middleware/async')
 // ]
 
 // Reading all the items from the database
-router.get('/', asyncMiddleware(async (req, res) => {
+router.get('/', async (req, res) => {
     const blogs = await Blog.find().sort('title, content, author')
     res.send(blogs);
-}))
+});
 
 // Getting an item from the database
-router.get('/:id', asyncMiddleware(async (req, res) => {
+router.get('/:id', async (req, res) => {
     const blog = await Blog.findByIdAndUpdate(req.params.id)
     //const findBlog = blogs.find(blog => blog.id === parseInt(req.params.id));
     if(!blog) {
@@ -42,10 +42,10 @@ router.get('/:id', asyncMiddleware(async (req, res) => {
     } else {
         res.send(blog);
     }
-}));
+});
 
 // Creating a post on the database 
-router.post('/', asyncMiddleware(async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const { error } = validate(req.body);
     if(error) {
         res.status(400).send(error.details[0].message)
@@ -60,10 +60,10 @@ router.post('/', asyncMiddleware(async (req, res) => {
 
     blog = await blog.save();
     res.send(blog);
-}));
+});
 
 // Updating a post on the database
-router.put('/:id', asyncMiddleware(async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     // Validate the blog
     const { error } = validate(req.body);
     if(error) {
@@ -85,10 +85,10 @@ router.put('/:id', asyncMiddleware(async (req, res) => {
 
     // Udate the blog
     res.send(blog);
-}))
+});
 
 // Deleting a blog
-router.delete('/:id', asyncMiddleware(async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     // check if the id exists
     //const blog = blogs.find(innerBlog => innerBlog.id === parseInt(req.params.id));
     const blog = await Blog.findByIdAndDelete(req.params.id)
@@ -98,6 +98,6 @@ router.delete('/:id', asyncMiddleware(async (req, res) => {
 
     // delete the blog
     res.send(blog)
-}));
+});
 
 module.exports = router;
