@@ -88,6 +88,19 @@ app.put('/:id', (req, res) => {
     res.send(blog);
 })
 
+// Deleting a blog
+app.delete('/:id', (req, res) => {
+    // check if the id exists
+    const blog = blogs.find(innerBlog => innerBlog.id === parseInt(req.params.id));
+    if(!blog) {
+        return res.status(404).send('The post you are looking for cannot be found');
+    }
+
+    // delete the blog
+    const idIndex = blogs.indexOf(blog);
+    blogs.splice(idIndex, 1);
+    res.send(blog)
+})
 
 // Validating the database
 function validateBlog(blog) {
